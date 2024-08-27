@@ -14,9 +14,6 @@ help:
 install:
 	bash run.sh install
 
-generate-project:
-	bash run.sh generate-project
-
 lint:
 	bash run.sh lint
 
