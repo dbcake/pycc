@@ -149,6 +149,7 @@ function create-sample-repo {
 }
 function open-pr {
     rm -rf "$REPO_NAME" ./outdir
+    install
     gh repo clone "$GITHUB_USERNAME/$REPO_NAME"
 
     mv "$REPO_NAME/.git" "./$REPO_NAME.git.bak"
