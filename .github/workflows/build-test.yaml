@@ -33,7 +33,7 @@ jobs:
           pip install pre-commit
       - name: Lint, Format, and other static code quality checks
         run: |
-          /bin/bash -x run.sh lint:ci
+          /bin/bash -x run.sh lint
 
   execute-tests:
     runs-on: ubuntu-latest
