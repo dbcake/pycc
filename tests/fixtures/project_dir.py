@@ -1,10 +1,10 @@
-# import json
+"""Pytest fixtures for test projects."""
+
+import shutil
 import subprocess
 from pathlib import Path
-from typing import Dict
-from copy import deepcopy
+
 import pytest
-import shutil
 
 from tests.utils.project import (
     generate_project,

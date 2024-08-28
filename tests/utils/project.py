@@ -1,23 +1,29 @@
+"""Utilities for creating test projects."""
+
 import json
 import subprocess
+from copy import deepcopy
 from pathlib import Path
 from typing import Dict
-from copy import deepcopy
 
-# import pytest
-# import shutil
 from tests.consts import PROJECT_DIR
 
 
 def initialize_git_repo(repo_dir: Path):
+    """Initialize a git repo in `repo_dir`."""
     subprocess.run(["git", "init"], cwd=repo_dir, check=True)
 
     subprocess.run(["git", "branch", "-M", "main"], cwd=repo_dir, check=True)
     subprocess.run(["git", "add", "--all"], cwd=repo_dir, check=True)
-    subprocess.run(["git", "commit", "-m", "'feat: initial commit by pytest'"], cwd=repo_dir, check=True)
+    subprocess.run(
+        ["git", "commit", "-m", "'feat: initial commit by pytest'"],
+        cwd=repo_dir,
+        check=True,
+    )
 
 
 def generate_project(template_values: Dict[str, str]):
+    """Generate a test project."""
     template_values_: Dict[str, str] = deepcopy(template_values)
     cookicutter_config = {"default_context": template_values_}
     cookicutter_config_fpath = PROJECT_DIR / "cookiecutter-test-config.json"

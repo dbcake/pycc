@@ -1,5 +1,7 @@
-from pathlib import Path
+"""Pytest configuration."""
+
 import sys
+from pathlib import Path
 
 THIS_DIR = Path(__file__).parent
 
