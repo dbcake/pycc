@@ -163,7 +163,7 @@ function open-pr {
     cat <<EOF > "$CONFIG_FILE_PATH"
 default_context:
   repo_name: $REPO_NAME
-  package_import_name: $PIN
+  package_import_name: $PACKAGE_IMPORT_NAME
 EOF
     cookiecutter ./ \
         --output-dir "$OUTDIR" \
@@ -176,14 +176,15 @@ EOF
 
     UUID=$(cat /proc/sys/kernel/random/uuid)
     UNIQUE_BRANCH_NAME=feat/populate-from-template-${UUID:0:6}
-
+    echo "Creating new branch $UNIQUE_BRANCH_NAME"
     git checkout -b "$UNIQUE_BRANCH_NAME"
     git add --all
     lint:ci || true
     git add --all
     git commit -m "feat: populating from template"
+    echo "Pushing changes"
     git push origin "$UNIQUE_BRANCH_NAME"
-
+    echo "Creating PR"
     gh pr create \
         --title "feat: populating from template" \
         --body "This PR was generated from a template" \
