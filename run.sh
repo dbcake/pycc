@@ -110,9 +110,9 @@ function push-initial-readme-to-repo {
     git add --all
     git commit -m "feat: created repository"
     # If not run locally
-    # if [[ -n "$GH_TOKEN" ]]; then
-    #     git remote set-url origin "https://$GITHUB_USERNAME:$GH_TOKEN@github.com/$GITHUB_USERNAME/$REPO_NAME"
-    # fi
+    if [[ -n "$GH_TOKEN" ]]; then
+        git remote set-url origin "https://$GITHUB_USERNAME:$GH_TOKEN@github.com/$GITHUB_USERNAME/$REPO_NAME"
+    fi
     git push origin "$UNIQUE_BRANCH_NAME"
 
 }
