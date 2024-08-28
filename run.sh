@@ -113,7 +113,7 @@ function push-initial-readme-to-repo {
     if [[ -n "$GH_TOKEN" ]]; then
         git remote set-url origin "https://$GITHUB_USERNAME:$GH_TOKEN@github.com/$GITHUB_USERNAME/$REPO_NAME"
     fi
-    git push origin "$UNIQUE_BRANCH_NAME"
+    git push origin main
 
 }
 function configure-repo {
