@@ -1,4 +1,4 @@
 {
     "repo_name": "repo-name",
-    "package_import_name": "default-package-name"
+    "package_import_name": "default_package_name"
 }

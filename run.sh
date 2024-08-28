@@ -83,5 +83,114 @@ function help {
     compgen -A function | cat -n
 }
 
+
+function create-repo-if-not-exists {
+    local IS_PUBLIC_REPO=${IS_PUBLIC_REPO:-false}
+    echo "Checking if repo exists..."
+    gh repo view "$GITHUB_USERNAME/$REPO_NAME" > /dev/null \
+        && echo "Repo exists, skipping..." && return 0
+    echo "Repo does not exist, creating..."
+
+    echo "Checking if repo is public or private..."
+    if [[ "$IS_PUBLIC_REPO" == "true" ]]; then
+        PUBLIC_OR_PRIVATE="public"
+    else
+        PUBLIC_OR_PRIVATE="private"
+    fi
+    echo "Creating repo"
+    gh repo create "$GITHUB_USERNAME/$REPO_NAME" "--$PUBLIC_OR_PRIVATE"
+    push-initial-readme-to-repo
+}
+
+function push-initial-readme-to-repo {
+    gh repo clone "$GITHUB_USERNAME/$REPO_NAME"
+    cd "$REPO_NAME"
+    echo "# $REPO_NAME" > "README.md"
+    git branch -M main || true
+    git add --all
+    git commit -m "feat: created repository"
+    # If not run locally
+    # if [[ -n "$GH_TOKEN" ]]; then
+    #     git remote set-url origin "https://$GITHUB_USERNAME:$GH_TOKEN@github.com/$GITHUB_USERNAME/$REPO_NAME"
+    # fi
+    git push origin "$UNIQUE_BRANCH_NAME"
+
+}
+function configure-repo {
+    gh secret set TEST_PYPI_TOKEN \
+        --body "$TEST_PYPI_TOKEN" \
+        --repo "$GITHUB_USERNAME/$REPO_NAME"
+    gh secret set PROD_PYPI_TOKEN \
+        --body "$PROD_PYPI_TOKEN" \
+        --repo "$GITHUB_USERNAME/$REPO_NAME"
+    BRANCH_NAME=main
+    gh api -X PUT "repos/$GITHUB_USERNAME/$REPO_NAME/branches/$BRANCH_NAME/protection" \
+        -H "Accept: application/vnd.github+json" \
+        -F "required_status_checks[strict]=true" \
+        -F "required_status_checks[checks][][context]=check-version-txt" \
+        -F "required_status_checks[checks][][context]=lint-format-and-static-code-checks" \
+        -F "required_status_checks[checks][][context]=build-wheel-and-sdist" \
+        -F "required_status_checks[checks][][context]=execute-tests" \
+        -F "required_pull_request_reviews[required_approving_review_count]=0" \
+        -F "enforce_admins=null" \
+        -F "restrictions=null" > /dev/null
+
+}
+
+function create-sample-repo {
+    git add .github/
+    git commit -m "fix: debugging workflow"
+    git push origin main
+    workflow run .github/workflows/create-or-update-repo.yaml \
+        -f repo_name=generated-repo-3 \
+        -f package_import_name=generated_repo_3 \
+        -f is_public_repo=false
+        --ref main
+}
+function open-pr {
+    rm -rf "$REPO_NAME" ./outdir
+    gh repo clone "$GITHUB_USERNAME/$REPO_NAME"
+
+    mv "$REPO_NAME/.git" "./$REPO_NAME.git.bak"
+    rm -rf "$REPO_NAME"
+    mkdir "$REPO_NAME"
+    mv "./$REPO_NAME.git.bak" "$REPO_NAME/.git"
+
+    # generate the project into the repository folder
+    OUTDIR="./outdir/"
+    CONFIG_FILE_PATH="./$REPO_NAME.yaml"
+    cat <<EOF > "$CONFIG_FILE_PATH"
+default_context:
+  repo_name: $REPO_NAME
+  package_import_name: $PIN
+EOF
+    cookiecutter ./ \
+        --output-dir "$OUTDIR" \
+        --no-input \
+        --config-file "$CONFIG_FILE_PATH"
+    rm $CONFIG_FILE_PATH
+
+    mv "$REPO_NAME/.git" "$OUTDIR/$REPO_NAME/"
+    cd "$OUTDIR/$REPO_NAME"
+
+    UUID=$(cat /proc/sys/kernel/random/uuid)
+    UNIQUE_BRANCH_NAME=feat/populate-from-template-${UUID:0:6}
+
+    git checkout -b "$UNIQUE_BRANCH_NAME"
+    git add --all
+    lint:ci || true
+    git add --all
+    git commit -m "feat: populating from template"
+    git push origin "$UNIQUE_BRANCH_NAME"
+
+    gh pr create \
+        --title "feat: populating from template" \
+        --body "This PR was generated from a template" \
+        --base main \
+        --head "$UNIQUE_BRANCH_NAME" \
+        --repo "$GITHUB_USERNAME/$REPO_NAME"
+}
+
 TIMEFORMAT="Task completed in %3lR"
 time ${@:-help}
+

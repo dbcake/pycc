@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 {{cookiecutter.package_import_name}} = ["*.json"]
 
 [project]
-name = {{cookiecutter.repo_name}} #"python-course-package"
+name = "{{cookiecutter.repo_name}}"
 authors = [{ name = "Eric Riddoch", email = "some-email@gmail.com" }]
 description = "My package description"
 readme = "README.md"
