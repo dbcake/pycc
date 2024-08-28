@@ -9,6 +9,19 @@ function install {
     python -m pip install --upgrade pip
     python -m pip install cookiecutter pytest
 }
+# execute tests that are not marked as `slow`
+function test:quick {
+    run-tests -m "not slow" ${@:-"$THIS_DIR/tests/"}
+}
+
+function lint {
+    pre-commit run --all-files
+}
+
+# (example) ./run.sh test tests/test_states_info.py::test__slow_add
+function run-tests {
+    python -m pytest ${@:-"$THIS_DIR/tests/"} 
+}
 
 # generate project
 function generate-project {
