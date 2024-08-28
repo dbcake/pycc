@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from tests.utils.project import (  # pylint: disable=E0611
+from tests.utils.project import (  # pylint: disable=no-name-in-module
     generate_project,
     initialize_git_repo,
 )
@@ -17,6 +17,7 @@ def project_dir() -> Path:  # type: ignore
     """Generate project and return the path."""
     template_values = {
         "repo_name": "test-repo",
+        "package_import_name": "default-package-name",
     }
     generated_repo_dir: Path = generate_project(
         template_values=template_values

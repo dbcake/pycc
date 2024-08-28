@@ -4,10 +4,10 @@ requires = ["setuptools>=61.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.package-data]
-example_pkg = ["*.json"]
+{{cookiecutter.package_import_name}} = ["*.json"]
 
 [project]
-name = "python-course-package"
+name = {{cookiecutter.repo_name}} #"python-course-package"
 authors = [{ name = "Eric Riddoch", email = "some-email@gmail.com" }]
 description = "My package description"
 readme = "README.md"
@@ -40,6 +40,7 @@ docstring-convention = "all"
 ignore = ["D107", "D212", "E501", "W503", "W605", "D203", "D100"]
 exclude = ["venv"]
 max-line-length = 119
+
 
 # radon
 radon-max-cc = 10
