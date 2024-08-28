@@ -1,1 +1,1 @@
-"""Utilities for testing"""
+"""Utilities for tests."""

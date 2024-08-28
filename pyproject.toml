@@ -14,6 +14,19 @@ max-line-length = 119
 # radon
 radon-max-cc = 10
 
+[tool.mypy]
+ignore_missing_imports = true
+no_site_packages = true
+check_untyped_defs = true
+# exclude = ["tests/", "tests.consts", "tests/consts.py"]
+no_namespace_packages = true
+
+# [[tool.mypy.overrides]]
+# module = "tests.*,project,utils"
+# # no_namespace_packages = true
+# ignore_missing_imports = true
+
+
 [tool.isort]
 profile = "black"
 multi_line_output = "VERTICAL_HANGING_INDENT"

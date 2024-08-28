@@ -1,5 +1,1 @@
-{
-    "default_context": {
-        "repo_name": "test-repo"
-    }
-}
+{"default_context": {"repo_name": "test-repo"}}
